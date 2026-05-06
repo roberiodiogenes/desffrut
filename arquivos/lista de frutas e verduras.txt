@@ -1,0 +1,83 @@
+FRUTAS
+Abacaxi G
+Abacaxi P
+Acerola
+Ameixa fresca
+Ameixa seca
+Ata
+Banana maçã
+Banana pacová
+Cajá
+Caqui
+Coco seco
+Coco verde
+Goiaba
+Kiwi
+Laranja
+Limão Grande
+Limão normal
+Maçã 135
+Maçã 198
+Maçã verde
+Mamão bola
+Mamão comprido
+Mamão havai
+Manga
+Maracujá
+Melancia
+Melão amarelo
+Melão japonês
+Milho
+Morango
+Pera
+Pitáia
+Tangirina
+Uva Núbia
+Uva Sem Semen
+Uva Tomson
+Uva verde
+Abacate
+
+VERDURAS E LEGUMES
+Abobora jacaré
+Abobrinha
+Acelga
+Alface
+Alho
+Alho poro
+Batata branca
+Batata ingla
+Batata roxa
+Berinjela
+Beterraba
+Brócolis
+Cebola branca
+Cebola roxa
+Cenoura
+Cheiro-verd
+Chuchu
+Couve flor
+Couve-folha
+Espinafre
+Feijão verd
+Gengibre
+Goma fresca
+Hortelã
+Inhame
+Jerimum
+Jiló
+Macaxera
+maxixe
+Pepino
+Pepino japonês
+Pimentão
+Pimentinha
+Quiabo
+Repolho
+Repolho rox
+Sacolas
+Salsa
+Tomate cajá
+Tomate cereja
+Tomate redonda
+Vargem

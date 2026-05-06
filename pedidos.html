@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Faça seu pedido online na Dresfrut. Frutas e verduras com entrega em domicílio em Cascavel – CE." />
+  <title>Fazer Pedido – Dresfrut</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="css/config.css" />
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/pedidos.css" />
+</head>
+<body data-base-path="../">
+
+  <div id="navbar-slot"></div>
+
+  <main id="main-content">
+    <div class="pedidos-layout">
+
+      <!-- ===== CATÁLOGO ===== -->
+      <div class="catalogo-col">
+        <div class="catalogo-header">
+          <h1 class="section-title" style="margin-bottom:var(--space-2)">🛒 Faça seu Pedido</h1>
+          <p style="color:var(--color-text-soft);font-size:var(--text-sm)">Pedidos aceitos até as <strong>11h30</strong> para entrega no mesmo dia</p>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filtros-bar" role="group" aria-label="Filtrar produtos">
+          <button class="filtro-btn active" data-cat="todos" aria-pressed="true">🌿 Todos</button>
+          <button class="filtro-btn" data-cat="frutas" aria-pressed="false">🍎 Frutas</button>
+          <button class="filtro-btn" data-cat="verduras" aria-pressed="false">🥦 Verduras</button>
+        </div>
+
+        <!-- Busca -->
+        <div class="busca-wrap">
+          <label for="busca-input" class="sr-only">Buscar produto</label>
+          <input
+            type="search"
+            id="busca-input"
+            class="form-input"
+            placeholder="🔍 Buscar produto..."
+            autocomplete="off"
+            aria-label="Buscar produto"
+          />
+        </div>
+
+        <!-- Grid de produtos -->
+        <div class="products-grid-pedidos" id="products-grid" role="list" aria-label="Lista de produtos">
+          <!-- Preenchido via JS -->
+        </div>
+      </div>
+
+      <!-- ===== SACOLA ===== -->
+      <aside class="sacola-col" aria-label="Sacola de compras">
+        <div class="sacola-sticky">
+          <div class="sacola-header">
+            <h2>🛍️ Sua Sacola</h2>
+            <span class="cart-count-label" id="sacola-count">0 itens</span>
+          </div>
+
+          <div class="sacola-items" id="sacola-items">
+            <div class="sacola-empty" id="sacola-empty">
+              <p>🛒</p>
+              <p>Sua sacola está vazia</p>
+              <p style="font-size:var(--text-sm);color:var(--color-text-muted)">Adicione produtos ao lado!</p>
+            </div>
+          </div>
+
+          <div class="sacola-footer" id="sacola-footer" style="display:none">
+            <div class="sacola-subtotal">
+              <span>Subtotal:</span>
+              <strong id="sacola-subtotal">R$ 0,00</strong>
+            </div>
+            <div class="sacola-entrega">
+              <span>Taxa de entrega:</span>
+              <strong id="sacola-entrega-val">R$ 5,00</strong>
+            </div>
+            <div class="sacola-total">
+              <span>Total:</span>
+              <strong id="sacola-total">R$ 0,00</strong>
+            </div>
+            <div class="sacola-pontos-info" id="sacola-pontos">
+              🍋 Você vai ganhar <strong id="sacola-pontos-val">0</strong> Dres-moedas nessa compra
+            </div>
+            <button class="btn btn-accent btn-lg" style="width:100%" id="btn-finalizar">
+              Finalizar Pedido ✅
+            </button>
+            <button class="btn btn-outline btn-sm" style="width:100%;margin-top:var(--space-2)" id="btn-limpar">
+              🗑️ Limpar sacola
+            </button>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- ===== MODAL FINALIZAR PEDIDO ===== -->
+    <div class="modal-overlay" id="modal-finalizar" role="dialog" aria-modal="true" aria-labelledby="modal-title" style="display:none">
+      <div class="modal-box">
+        <button class="modal-close" id="modal-close" aria-label="Fechar">✕</button>
+        <h2 id="modal-title" style="font-family:var(--font-display);margin-bottom:var(--space-4)">
+          📋 Finalizar Pedido
+        </h2>
+
+        <!-- Resumo do pedido -->
+        <div class="modal-resumo" id="modal-resumo"></div>
+
+        <!-- Formulário -->
+        <div id="modal-form">
+          <div class="form-group">
+            <label class="form-label" for="nome-completo">Nome completo *</label>
+            <input class="form-input" type="text" id="nome-completo" placeholder="Seu nome completo" required autocomplete="name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="telefone-pedido">WhatsApp / Telefone *</label>
+            <input class="form-input" type="tel" id="telefone-pedido" placeholder="(88) 9XXXX-XXXX" required autocomplete="tel" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="endereco-pedido">Endereço de entrega *</label>
+            <input class="form-input" type="text" id="endereco-pedido" placeholder="Rua, número, bairro" required autocomplete="street-address" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="pagamento">Forma de pagamento *</label>
+            <select class="form-select" id="pagamento" required>
+              <option value="">Selecione...</option>
+              <option value="pix">💸 PIX</option>
+              <option value="dinheiro">💵 Dinheiro</option>
+              <option value="cartao">💳 Cartão (débito/crédito)</option>
+              <option value="outros">Outros</option>
+            </select>
+          </div>
+          <div class="form-group" id="troco-wrap" style="display:none">
+            <label class="form-label" for="troco">Troco para quanto? (opcional)</label>
+            <input class="form-input" type="number" id="troco" placeholder="Ex: 50" min="0" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="obs">Observações (opcional)</label>
+            <textarea class="form-textarea" id="obs" rows="2" placeholder="Ex: deixar com o vizinho, não bater campainha..."></textarea>
+          </div>
+          <button class="btn btn-accent btn-lg" style="width:100%" id="btn-enviar-whatsapp">
+            💬 Enviar pedido pelo WhatsApp
+          </button>
+          <p style="text-align:center;font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--space-2)">
+            Você será redirecionado para o WhatsApp para confirmar o pedido
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer-slot"></div>
+
+  <script src="../js/links.js"></script>
+  <script src="../data/produtos.js"></script>
+  <script src="../js/global.js"></script>
+  <script src="../js/components.js"></script>
+  <script src="../js/pedidos.js"></script>
+</body>
+</html>

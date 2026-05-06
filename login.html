@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entrar / Cadastrar – Dresfrut</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="css/config.css" />
+  <link rel="stylesheet" href="css/global.css" />
+  <style>
+    .auth-page {
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-8) var(--space-4);
+      background: var(--gradient-fresh);
+    }
+    .auth-box {
+      background: var(--color-surface);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+      padding: var(--space-8);
+      width: 100%;
+      max-width: 440px;
+    }
+    .auth-logo {
+      text-align: center;
+      margin-bottom: var(--space-6);
+    }
+    .auth-logo-icon { font-size: 3rem; display: block; margin-bottom: var(--space-2); }
+    .auth-logo-name { font-family: var(--font-display); font-size: var(--text-3xl); color: var(--color-primary-dark); }
+    .auth-tabs {
+      display: flex;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 2px solid var(--color-primary);
+      margin-bottom: var(--space-6);
+    }
+    .auth-tab {
+      flex: 1;
+      padding: var(--space-3);
+      text-align: center;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      transition: all var(--transition-fast);
+      background: transparent;
+      color: var(--color-primary);
+    }
+    .auth-tab.active { background: var(--color-primary); color: white; }
+    .auth-form { display: none; }
+    .auth-form.active { display: block; }
+    .auth-footer {
+      text-align: center;
+      margin-top: var(--space-4);
+      font-size: var(--text-sm);
+      color: var(--color-text-soft);
+    }
+    .auth-footer a { color: var(--color-primary); font-weight: 600; text-decoration: none; }
+    .pontos-badge {
+      background: var(--color-accent-soft);
+      border-radius: var(--radius-md);
+      padding: var(--space-3);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-5);
+      font-size: var(--text-sm);
+    }
+  </style>
+</head>
+<body data-base-path="../">
+  <div id="navbar-slot"></div>
+
+  <main id="main-content">
+    <div class="auth-page">
+      <div class="auth-box">
+        <div class="auth-logo">
+          <span class="auth-logo-icon">🌿</span>
+          <div class="auth-logo-name">Dresfrut</div>
+        </div>
+
+        <div class="auth-tabs" role="tablist">
+          <button class="auth-tab active" role="tab" aria-selected="true" id="tab-login" onclick="switchTab('login')">Entrar</button>
+          <button class="auth-tab" role="tab" aria-selected="false" id="tab-cadastro" onclick="switchTab('cadastro')">Cadastrar</button>
+        </div>
+
+        <!-- LOGIN -->
+        <div class="auth-form active" id="form-login" role="tabpanel" aria-labelledby="tab-login">
+          <div class="form-group">
+            <label class="form-label" for="login-cpf">CPF ou E-mail</label>
+            <input class="form-input" type="text" id="login-cpf" placeholder="000.000.000-00 ou seu@email.com" autocomplete="username" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="login-senha">Senha</label>
+            <input class="form-input" type="password" id="login-senha" placeholder="••••••••" autocomplete="current-password" />
+          </div>
+          <button class="btn btn-primary btn-lg" style="width:100%;margin-bottom:var(--space-3)" onclick="fazerLogin()">
+            Entrar na minha conta
+          </button>
+          <div style="text-align:center">
+            <a href="#" style="font-size:var(--text-sm);color:var(--color-primary)">Esqueci minha senha</a>
+          </div>
+          <div class="auth-footer">
+            Não tem conta? <a href="#" onclick="switchTab('cadastro')">Cadastre-se grátis</a>
+          </div>
+        </div>
+
+        <!-- CADASTRO -->
+        <div class="auth-form" id="form-cadastro" role="tabpanel" aria-labelledby="tab-cadastro">
+          <div class="pontos-badge">
+            <span style="font-size:1.5rem">🍋</span>
+            <span>Cadastre-se e comece a ganhar <strong>Dres-moedas</strong> nas suas compras!</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="cad-nome">Nome completo *</label>
+            <input class="form-input" type="text" id="cad-nome" placeholder="Seu nome completo" autocomplete="name" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cad-cpf">CPF *</label>
+            <input class="form-input" type="text" id="cad-cpf" placeholder="000.000.000-00" autocomplete="off" required maxlength="14" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cad-nasc">Data de nascimento *</label>
+            <input class="form-input" type="date" id="cad-nasc" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cad-sexo">Sexo</label>
+            <select class="form-select" id="cad-sexo">
+              <option value="">Prefiro não informar</option>
+              <option value="M">Masculino</option>
+              <option value="F">Feminino</option>
+              <option value="O">Outro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cad-email">E-mail *</label>
+            <input class="form-input" type="email" id="cad-email" placeholder="seu@email.com" autocomplete="email" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cad-fone">WhatsApp *</label>
+            <input class="form-input" type="tel" id="cad-fone" placeholder="(88) 9XXXX-XXXX" autocomplete="tel" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cad-end">Endereço de entrega *</label>
+            <input class="form-input" type="text" id="cad-end" placeholder="Rua, número, bairro, Cascavel–CE" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cad-senha">Senha *</label>
+            <input class="form-input" type="password" id="cad-senha" placeholder="Mínimo 6 caracteres" autocomplete="new-password" required minlength="6" />
+          </div>
+          <button class="btn btn-primary btn-lg" style="width:100%;" onclick="fazerCadastro()">
+            🌿 Criar minha conta grátis
+          </button>
+          <div class="auth-footer">
+            Já tem conta? <a href="#" onclick="switchTab('login')">Entre aqui</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer-slot"></div>
+
+  <script src="../js/links.js"></script>
+  <script src="../data/produtos.js"></script>
+  <script src="../js/global.js"></script>
+  <script src="../js/components.js"></script>
+  <script>
+    function switchTab(tab) {
+      document.querySelectorAll(".auth-tab").forEach(t => {
+        t.classList.remove("active");
+        t.setAttribute("aria-selected","false");
+      });
+      document.querySelectorAll(".auth-form").forEach(f => f.classList.remove("active"));
+      document.getElementById("tab-" + tab).classList.add("active");
+      document.getElementById("tab-" + tab).setAttribute("aria-selected","true");
+      document.getElementById("form-" + tab).classList.add("active");
+    }
+
+    function fazerLogin() {
+      const cpf   = document.getElementById("login-cpf").value.trim();
+      const senha = document.getElementById("login-senha").value;
+      if (!cpf || !senha) { showToast("⚠️ Preencha todos os campos!"); return; }
+
+      /* Simulação: verifica localStorage */
+      const chave = "dresfrut_users";
+      const users = JSON.parse(localStorage.getItem(chave) || "[]");
+      const user  = users.find(u => (u.cpf === cpf || u.email === cpf) && u.senha === senha);
+      if (!user) { showToast("❌ CPF/email ou senha incorretos!"); return; }
+
+      Auth.login(user);
+      showToast("✅ Bem-vindo, " + user.nome.split(" ")[0] + "!");
+      setTimeout(() => window.location.href = "cliente.html", 1000);
+    }
+
+    function fazerCadastro() {
+      const nome  = document.getElementById("cad-nome").value.trim();
+      const cpf   = document.getElementById("cad-cpf").value.trim();
+      const nasc  = document.getElementById("cad-nasc").value;
+      const sexo  = document.getElementById("cad-sexo").value;
+      const email = document.getElementById("cad-email").value.trim();
+      const fone  = document.getElementById("cad-fone").value.trim();
+      const end   = document.getElementById("cad-end").value.trim();
+      const senha = document.getElementById("cad-senha").value;
+
+      if (!nome || !cpf || !nasc || !email || !fone || !end || !senha) {
+        showToast("⚠️ Preencha todos os campos obrigatórios!"); return;
+      }
+      if (senha.length < 6) { showToast("⚠️ A senha deve ter pelo menos 6 caracteres!"); return; }
+
+      const chave = "dresfrut_users";
+      const users = JSON.parse(localStorage.getItem(chave) || "[]");
+      if (users.find(u => u.cpf === cpf || u.email === email)) {
+        showToast("⚠️ CPF ou e-mail já cadastrado!"); return;
+      }
+
+      const novoUser = {
+        id: Date.now().toString(),
+        nome, cpf, nasc, sexo, email, fone, endereco: end, senha,
+        dataCadastro: new Date().toISOString(),
+        pontos: 0,
+        historico: [],
+        foto: null,
+      };
+      users.push(novoUser);
+      localStorage.setItem(chave, JSON.stringify(users));
+      Auth.login(novoUser);
+      showToast("✅ Cadastro realizado! Bem-vindo, " + nome.split(" ")[0] + "! 🌿");
+      setTimeout(() => window.location.href = "cliente.html", 1200);
+    }
+
+    /* Se já logado, redireciona */
+    if (Auth.isLoggedIn()) window.location.href = "cliente.html";
+  </script>
+</body>
+</html>

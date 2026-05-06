@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minha Conta – Dresfrut</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="css/config.css" />
+  <link rel="stylesheet" href="css/global.css" />
+  <style>
+    .cliente-page { padding: var(--space-8) 0; background: var(--gradient-fresh); min-height: 80vh; }
+    .cliente-header {
+      background: var(--gradient-hero);
+      color: white;
+      padding: var(--space-8) 0;
+      margin-bottom: var(--space-6);
+    }
+    .cliente-header-inner { display: flex; align-items: center; gap: var(--space-6); flex-wrap: wrap; }
+    .cliente-avatar {
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid white;
+      box-shadow: var(--shadow-lg);
+      background: var(--color-primary-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem;
+      cursor: pointer;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .cliente-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .cliente-nome { font-family: var(--font-display); font-size: var(--text-3xl); }
+    .cliente-meta { opacity: 0.8; font-size: var(--text-sm); }
+
+    .pontos-card {
+      background: var(--gradient-accent);
+      border-radius: var(--radius-xl);
+      padding: var(--space-5) var(--space-6);
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+      box-shadow: var(--shadow-lg);
+    }
+    .pontos-card-num { font-family: var(--font-display); font-size: var(--text-5xl); font-weight: 800; line-height: 1; }
+
+    .cliente-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+    .cliente-card { background: var(--color-surface); border-radius: var(--radius-lg); padding: var(--space-5); box-shadow: var(--shadow-sm); }
+    .cliente-card-title { font-weight: 800; font-size: var(--text-lg); margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-2); }
+
+    .historico-item {
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+    .historico-item-header { display: flex; justify-content: space-between; margin-bottom: var(--space-1); }
+    .historico-item-num { font-weight: 700; font-size: var(--text-sm); }
+    .historico-item-data { font-size: var(--text-xs); color: var(--color-text-muted); }
+    .historico-item-total { color: var(--color-primary-dark); font-weight: 800; }
+
+    .dados-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+    .dado-item strong { display: block; font-size: var(--text-xs); color: var(--color-text-muted); text-transform: uppercase; letter-spacing: .04em; }
+    .dado-item span { font-size: var(--text-base); font-weight: 600; }
+
+    .cupom-card {
+      background: repeating-linear-gradient(45deg, var(--color-surface-alt), var(--color-surface-alt) 5px, white 5px, white 10px);
+      border: 2px dashed var(--color-primary-light);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      text-align: center;
+      margin-bottom: var(--space-3);
+    }
+    .cupom-codigo { font-size: var(--text-2xl); font-weight: 800; color: var(--color-primary-dark); letter-spacing: .1em; }
+
+    @media (max-width: 700px) {
+      .cliente-grid { grid-template-columns: 1fr; }
+      .dados-grid { grid-template-columns: 1fr; }
+      .pontos-card { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body data-base-path="../">
+  <div id="navbar-slot"></div>
+
+  <main id="main-content">
+    <!-- Header do cliente -->
+    <div class="cliente-header">
+      <div class="container cliente-header-inner">
+        <div class="cliente-avatar" id="avatar-wrap" title="Clique para trocar a foto" onclick="trocarFoto()">
+          <span id="avatar-inicial">👤</span>
+        </div>
+        <div>
+          <p class="cliente-nome" id="cliente-nome">Carregando...</p>
+          <p class="cliente-meta">Cliente desde <span id="cliente-desde">—</span> · <span id="cliente-idade"></span></p>
+          <p class="cliente-meta" id="cliente-id"></p>
+        </div>
+        <div style="margin-left:auto">
+          <button class="btn btn-outline" style="border-color:rgba(255,255,255,.5);color:white" onclick="Auth.logout()">
+            Sair da conta
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- Dres-moedas -->
+      <div class="pontos-card">
+        <div>
+          <p style="font-size:var(--text-sm);opacity:.8;margin-bottom:var(--space-1)">🍋 Suas Dres-moedas</p>
+          <div class="pontos-card-num" id="pontos-total">0</div>
+        </div>
+        <div style="flex:1">
+          <p style="opacity:.9;margin-bottom:var(--space-2)">A cada R$ 1,00 em compras, você ganha 1 Dres-moeda!</p>
+          <p style="font-size:var(--text-sm);opacity:.75">Em breve: troque por descontos e produtos 🎁</p>
+        </div>
+      </div>
+
+      <div class="cliente-grid">
+
+        <!-- Histórico de pedidos -->
+        <div class="cliente-card">
+          <div class="cliente-card-title">📦 Histórico de Pedidos</div>
+          <div id="historico-lista">
+            <div style="text-align:center;color:var(--color-text-muted);padding:var(--space-6)">
+              <p style="font-size:2rem">📦</p>
+              <p>Nenhum pedido ainda</p>
+              <a href="pedidos.html" class="btn btn-primary btn-sm" style="margin-top:var(--space-3)">Fazer meu primeiro pedido</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cupons e dados -->
+        <div>
+          <!-- Cupons -->
+          <div class="cliente-card" style="margin-bottom:var(--space-4)">
+            <div class="cliente-card-title">🎟️ Meus Cupons</div>
+            <div id="cupons-lista">
+              <div class="cupom-card">
+                <p style="font-size:var(--text-xs);margin-bottom:var(--space-1);color:var(--color-text-muted)">BEM-VINDO!</p>
+                <div class="cupom-codigo">DRES10</div>
+                <p style="font-size:var(--text-sm);color:var(--color-text-soft);margin-top:var(--space-1)">10% de desconto na 1ª compra</p>
+                <span class="badge badge-green" style="margin-top:var(--space-2)">Disponível</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dados pessoais -->
+          <div class="cliente-card">
+            <div class="cliente-card-title">👤 Meus Dados</div>
+            <div class="dados-grid" id="dados-pessoais">
+              <!-- Preenchido via JS -->
+            </div>
+            <div style="margin-top:var(--space-4)">
+              <button class="btn btn-outline btn-sm" onclick="editarDados()">✏️ Editar dados</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Mapa / Endereço de entrega -->
+      <div class="cliente-card" style="margin-top:var(--space-4)">
+        <div class="cliente-card-title">📍 Meu Endereço de Entrega</div>
+        <p id="endereco-exibido" style="margin-bottom:var(--space-3);color:var(--color-text-soft)"></p>
+        <div id="mapa-wrapper">
+          <!-- O iframe será gerado via JS com o endereço do usuário -->
+          <iframe
+            id="mapa-frame"
+            title="Mapa do endereço de entrega"
+            width="100%"
+            height="280"
+            style="border:0;border-radius:var(--radius-lg)"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input foto escondido -->
+    <input type="file" id="foto-input" accept="image/*" style="display:none" onchange="processarFoto(event)" />
+  </main>
+
+  <div id="footer-slot"></div>
+
+  <script src="../js/links.js"></script>
+  <script src="../data/produtos.js"></script>
+  <script src="../js/global.js"></script>
+  <script src="../js/components.js"></script>
+  <script>
+    /* Garante que só acessa logado */
+    document.addEventListener("DOMContentLoaded", () => {
+      if (!Auth.isLoggedIn()) {
+        window.location.href = "login.html"; return;
+      }
+      carregarPerfil();
+    });
+
+    function calcularIdade(nasc) {
+      const hoje = new Date();
+      const nascDate = new Date(nasc);
+      let idade = hoje.getFullYear() - nascDate.getFullYear();
+      const m = hoje.getMonth() - nascDate.getMonth();
+      if (m < 0 || (m === 0 && hoje.getDate() < nascDate.getDate())) idade--;
+      return idade;
+    }
+
+    function formatarData(iso) {
+      return new Date(iso).toLocaleDateString("pt-BR");
+    }
+
+    function carregarPerfil() {
+      const user = Auth.getUser();
+      if (!user) return;
+
+      /* Header */
+      document.getElementById("cliente-nome").textContent = user.nome;
+      document.getElementById("cliente-desde").textContent = formatarData(user.dataCadastro);
+      document.getElementById("cliente-id").textContent = "ID: " + user.cpf;
+
+      if (user.nasc) {
+        const idade = calcularIdade(user.nasc);
+        document.getElementById("cliente-idade").textContent = idade + " anos";
+      }
+
+      /* Pontos */
+      document.getElementById("pontos-total").textContent = user.pontos || 0;
+
+      /* Avatar */
+      const avatarWrap = document.getElementById("avatar-wrap");
+      if (user.foto) {
+        avatarWrap.innerHTML = `<img src="${user.foto}" alt="Foto de perfil de ${user.nome}" />`;
+      } else {
+        document.getElementById("avatar-inicial").textContent = user.nome.charAt(0).toUpperCase();
+      }
+
+      /* Dados pessoais */
+      const sexoMap = { M: "Masculino", F: "Feminino", O: "Outro", "": "Não informado" };
+      const pagForm = { pix: "PIX", dinheiro: "Dinheiro", cartao: "Cartão", outros: "Outros" };
+      const dados = [
+        { label: "Nome", valor: user.nome },
+        { label: "CPF", valor: user.cpf },
+        { label: "E-mail", valor: user.email },
+        { label: "WhatsApp", valor: user.fone },
+        { label: "Data de Nascimento", valor: user.nasc ? new Date(user.nasc + "T00:00:00").toLocaleDateString("pt-BR") : "—" },
+        { label: "Sexo", valor: sexoMap[user.sexo] || "—" },
+      ];
+      document.getElementById("dados-pessoais").innerHTML = dados.map(d => `
+        <div class="dado-item">
+          <strong>${d.label}</strong>
+          <span>${d.valor || "—"}</span>
+        </div>
+      `).join("");
+
+      /* Endereço e mapa */
+      document.getElementById("endereco-exibido").textContent = user.endereco || "—";
+      if (user.endereco) {
+        const q = encodeURIComponent(user.endereco + ", Cascavel, CE, Brasil");
+        document.getElementById("mapa-frame").src =
+          `https://www.google.com/maps?q=${q}&output=embed`;
+      }
+
+      /* Histórico (simulado) */
+      if (user.historico && user.historico.length > 0) {
+        document.getElementById("historico-lista").innerHTML = user.historico.map(p => `
+          <div class="historico-item">
+            <div class="historico-item-header">
+              <span class="historico-item-num">#${p.id}</span>
+              <span class="historico-item-data">${formatarData(p.data)}</span>
+            </div>
+            <p style="font-size:var(--text-sm);color:var(--color-text-soft);margin-bottom:var(--space-1)">${p.itens.map(i => i.nome).join(", ")}</p>
+            <span class="historico-item-total">${(p.total || 0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</span>
+          </div>
+        `).join("");
+      }
+    }
+
+    function trocarFoto() {
+      document.getElementById("foto-input").click();
+    }
+
+    function processarFoto(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const user = Auth.getUser();
+        user.foto = e.target.result;
+        /* Atualiza no "banco" */
+        const chave = "dresfrut_users";
+        const users = JSON.parse(localStorage.getItem(chave) || "[]");
+        const idx = users.findIndex(u => u.id === user.id);
+        if (idx > -1) users[idx].foto = user.foto;
+        localStorage.setItem(chave, JSON.stringify(users));
+        Auth.login(user);
+        document.getElementById("avatar-wrap").innerHTML = `<img src="${user.foto}" alt="Foto de perfil" />`;
+        showToast("✅ Foto atualizada!");
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function editarDados() {
+      showToast("✏️ Em breve: edição de dados por aqui!");
+    }
+  </script>
+</body>
+</html>
