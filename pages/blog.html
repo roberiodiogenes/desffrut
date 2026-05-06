@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Blog Dresfrut – Dicas de frutas, receitas saudáveis, nutrição e muito mais para sua família em Cascavel CE." />
+  <title>Blog – Dresfrut</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="../css/config.css" />
+  <link rel="stylesheet" href="../css/global.css" />
+  <style>
+    .blog-hero {
+      background: var(--gradient-hero);
+      color: white;
+      padding: var(--space-12) 0 var(--space-10);
+      text-align: center;
+    }
+    .blog-hero h1 {
+      font-family: var(--font-display);
+      font-size: var(--text-5xl);
+      margin-bottom: var(--space-3);
+    }
+    .blog-hero p { font-size: var(--text-xl); opacity: .85; }
+
+    .blog-page { padding: var(--space-10) 0; background: var(--gradient-fresh); }
+
+    .blog-layout {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: var(--space-8);
+      align-items: start;
+    }
+
+    /* Grid de posts */
+    .blog-posts-grid {
+      display: grid;
+      gap: var(--space-5);
+    }
+
+    .blog-post-card {
+      background: var(--color-surface);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1.5px solid var(--color-border);
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      transition: all var(--transition-normal);
+    }
+    .blog-post-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .blog-post-card.destaque {
+      grid-template-columns: 1fr;
+      border-color: var(--color-primary-light);
+    }
+
+    .blog-post-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      min-height: 200px;
+    }
+    .blog-post-card.destaque .blog-post-img { height: 300px; }
+
+    .blog-post-body {
+      padding: var(--space-5);
+      display: flex;
+      flex-direction: column;
+    }
+    .blog-post-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+      flex-wrap: wrap;
+    }
+    .blog-post-cat {
+      background: var(--color-surface-alt);
+      color: var(--color-primary-dark);
+      padding: 2px 10px;
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .blog-post-date {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+    .blog-post-title {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      line-height: 1.25;
+      margin-bottom: var(--space-2);
+      color: var(--color-text);
+    }
+    .blog-post-card:not(.destaque) .blog-post-title { font-size: var(--text-xl); }
+    .blog-post-excerpt {
+      font-size: var(--text-sm);
+      color: var(--color-text-soft);
+      line-height: 1.7;
+      flex: 1;
+      margin-bottom: var(--space-4);
+    }
+    .blog-post-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .blog-post-author {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+    }
+    .blog-post-author-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--color-primary-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+    }
+
+    /* Sidebar */
+    .blog-sidebar { position: sticky; top: calc(var(--nav-height) + var(--space-4)); }
+
+    .sidebar-card {
+      background: var(--color-surface);
+      border-radius: var(--radius-xl);
+      padding: var(--space-5);
+      box-shadow: var(--shadow-sm);
+      border: 1.5px solid var(--color-border);
+      margin-bottom: var(--space-4);
+    }
+    .sidebar-title {
+      font-weight: 800;
+      font-size: var(--text-base);
+      margin-bottom: var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .sidebar-cat-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+    .sidebar-cat-list li a {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-decoration: none;
+      color: var(--color-text-soft);
+      font-size: var(--text-sm);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      transition: all var(--transition-fast);
+    }
+    .sidebar-cat-list li a:hover {
+      background: var(--color-surface-alt);
+      color: var(--color-primary);
+    }
+    .sidebar-cat-count {
+      background: var(--color-border);
+      border-radius: var(--radius-full);
+      padding: 1px 8px;
+      font-size: var(--text-xs);
+      font-weight: 700;
+    }
+
+    .sidebar-recent-item {
+      display: flex;
+      gap: var(--space-3);
+      padding: var(--space-2) 0;
+      border-bottom: 1px solid var(--color-border);
+      text-decoration: none;
+      color: var(--color-text);
+    }
+    .sidebar-recent-item:last-child { border-bottom: none; }
+    .sidebar-recent-img {
+      width: 54px; height: 54px;
+      border-radius: var(--radius-md);
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .sidebar-recent-title {
+      font-size: var(--text-sm);
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    .sidebar-recent-date {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+
+    /* Newsletter */
+    .newsletter-card {
+      background: var(--gradient-hero);
+      color: white;
+      border-radius: var(--radius-xl);
+      padding: var(--space-5);
+    }
+    .newsletter-card p { opacity: .9; font-size: var(--text-sm); margin-bottom: var(--space-3); }
+
+    /* Filtros */
+    .blog-filtros {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-6);
+    }
+    .blog-filtro-btn {
+      padding: var(--space-1) var(--space-4);
+      border-radius: var(--radius-full);
+      border: 2px solid var(--color-border);
+      background: var(--color-surface);
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      color: var(--color-text-soft);
+    }
+    .blog-filtro-btn:hover, .blog-filtro-btn.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: white;
+    }
+
+    @media (max-width: 900px) {
+      .blog-layout { grid-template-columns: 1fr; }
+      .blog-sidebar { position: static; }
+      .blog-post-card { grid-template-columns: 1fr; }
+      .blog-post-img { min-height: 200px; max-height: 220px; }
+    }
+  </style>
+</head>
+<body data-base-path="../">
+  <div id="navbar-slot"></div>
+
+  <main id="main-content">
+    <!-- Hero do Blog -->
+    <div class="blog-hero">
+      <div class="container">
+        <h1>📰 Blog Dresfrut</h1>
+        <p>Dicas, receitas e curiosidades sobre frutas e verduras toda semana</p>
+      </div>
+    </div>
+
+    <div class="blog-page">
+      <div class="container">
+        <!-- Filtros -->
+        <div class="blog-filtros" role="group" aria-label="Filtrar por categoria">
+          <button class="blog-filtro-btn active" data-cat="todos">🌿 Todos</button>
+          <button class="blog-filtro-btn" data-cat="receitas">🍳 Receitas</button>
+          <button class="blog-filtro-btn" data-cat="saude">💚 Saúde</button>
+          <button class="blog-filtro-btn" data-cat="dicas">💡 Dicas</button>
+          <button class="blog-filtro-btn" data-cat="curiosidades">🔍 Curiosidades</button>
+          <button class="blog-filtro-btn" data-cat="datas">📅 Datas Especiais</button>
+        </div>
+
+        <div class="blog-layout">
+          <!-- Posts -->
+          <div>
+            <div class="blog-posts-grid" id="blog-posts-grid">
+              <!-- Preenchido via JS -->
+            </div>
+          </div>
+
+          <!-- Sidebar -->
+          <aside class="blog-sidebar" aria-label="Barra lateral do blog">
+
+            <!-- Busca -->
+            <div class="sidebar-card">
+              <div class="sidebar-title">🔍 Buscar</div>
+              <input type="search" class="form-input" placeholder="Buscar no blog..." id="blog-busca" aria-label="Buscar posts" />
+            </div>
+
+            <!-- Categorias -->
+            <div class="sidebar-card">
+              <div class="sidebar-title">📂 Categorias</div>
+              <ul class="sidebar-cat-list">
+                <li><a href="#">🍳 Receitas <span class="sidebar-cat-count">8</span></a></li>
+                <li><a href="#">💚 Saúde <span class="sidebar-cat-count">5</span></a></li>
+                <li><a href="#">💡 Dicas <span class="sidebar-cat-count">6</span></a></li>
+                <li><a href="#">🔍 Curiosidades <span class="sidebar-cat-count">4</span></a></li>
+                <li><a href="#">📅 Datas Especiais <span class="sidebar-cat-count">3</span></a></li>
+              </ul>
+            </div>
+
+            <!-- Posts recentes -->
+            <div class="sidebar-card">
+              <div class="sidebar-title">🕒 Recentes</div>
+              <div id="sidebar-recent"><!-- JS --></div>
+            </div>
+
+            <!-- Newsletter -->
+            <div class="newsletter-card">
+              <div style="font-size:1.5rem;margin-bottom:var(--space-2)">📬</div>
+              <strong style="font-size:var(--text-lg);display:block;margin-bottom:var(--space-1)">Receba nossas dicas!</strong>
+              <p>Assine e receba receitas e promoções toda semana.</p>
+              <div class="form-group">
+                <input class="form-input" type="email" placeholder="seu@email.com" id="newsletter-email" style="margin-bottom:var(--space-2)" aria-label="E-mail para newsletter" />
+                <button class="btn btn-accent" style="width:100%" onclick="assinarNewsletter()">Assinar grátis</button>
+              </div>
+            </div>
+
+          </aside>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer-slot"></div>
+
+  <script src="../js/links.js"></script>
+  <script src="../data/produtos.js"></script>
+  <script src="../js/global.js"></script>
+  <script src="../js/components.js"></script>
+  <script>
+    /* ---- Dados dos posts (editar aqui ou migrar para data/blog.js) ---- */
+    const BLOG_POSTS = [
+      {
+        id: "beneficios-abacaxi",
+        titulo: "5 benefícios do abacaxi para sua saúde",
+        categoria: "saude",
+        catLabel: "💚 Saúde",
+        data: "01/05/2025",
+        autor: "Equipe Dresfrut",
+        destaque: true,
+        img: "https://images.unsplash.com/photo-1550258987-190a2d41a8ba?w=800&q=80",
+        resumo: "O abacaxi é uma das frutas mais populares do nordeste e esconde um verdadeiro arsenal de nutrientes. Rico em vitamina C, manganês e a famosa bromelina — uma enzima anti-inflamatória poderosa — ele é aliado da imunidade, da digestão e até da saúde da pele. Saiba como incluir essa fruta maravilhosa no seu dia a dia!",
+        conteudo: `<p>O abacaxi (Ananas comosus) é muito mais do que uma fruta gostosa — é um superalimento acessível que pode transformar sua saúde. Confira os principais benefícios:</p>
+        <h3>1. Fortalece a imunidade</h3><p>Uma fatia de abacaxi fornece quase 100% da dose diária recomendada de vitamina C, essencial para o sistema imunológico.</p>
+        <h3>2. Melhora a digestão</h3><p>A bromelina, enzima encontrada principalmente no talo, ajuda a quebrar proteínas e facilita a digestão.</p>
+        <h3>3. Anti-inflamatório natural</h3><p>Estudos mostram que a bromelina pode reduzir inflamações no corpo, ajudando em dores musculares e articulares.</p>
+        <h3>4. Hidratação</h3><p>Com mais de 86% de água na composição, o abacaxi é excelente para manter o corpo hidratado no calor do Ceará.</p>
+        <h3>5. Rico em manganês</h3><p>Fundamental para a formação de ossos e para o metabolismo energético.</p>
+        <p><strong>Dica Dresfrut:</strong> Escolha um abacaxi com casca amarelada e cheiro adocicado na base — é sinal de que está no ponto certo!</p>`
+      },
+      {
+        id: "suco-verde-detox",
+        titulo: "Receita: Suco verde detox com couve e abacaxi",
+        categoria: "receitas",
+        catLabel: "🍳 Receitas",
+        data: "25/04/2025",
+        autor: "Equipe Dresfrut",
+        destaque: false,
+        img: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&q=80",
+        resumo: "Um suco prático e nutritivo para começar o dia com energia. Leva só 5 minutos para preparar e os ingredientes você encontra aqui na Dresfrut!",
+        conteudo: `<p>Esse suco detox é simples, gostoso e cheia de nutrientes. Perfeito para o café da manhã ou para uma tarde refrescante.</p>
+        <h3>🥬 Ingredientes (2 porções):</h3>
+        <ul><li>2 folhas de couve</li><li>1 fatia grossa de abacaxi</li><li>1 pepino médio</li><li>Suco de 1 limão</li><li>1 colher de gengibre ralado</li><li>200ml de água de coco (ou água gelada)</li></ul>
+        <h3>Modo de preparo:</h3>
+        <ol><li>Lave bem todos os ingredientes</li><li>Pique o pepino e o abacaxi em pedaços</li><li>Bata tudo no liquidificador</li><li>Coe se preferir mais lisinho</li><li>Sirva gelado e aproveite!</li></ol>
+        <p><strong>💡 Dica:</strong> Congele o abacaxi em cubinhos para um suco ainda mais geladinho!</p>`
+      },
+      {
+        id: "como-escolher-melancia",
+        titulo: "Como escolher a melancia perfeita: truques infalíveis",
+        categoria: "dicas",
+        catLabel: "💡 Dicas",
+        data: "18/04/2025",
+        autor: "Equipe Dresfrut",
+        destaque: false,
+        img: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=600&q=80",
+        resumo: "Aprenda os truques simples para garantir que você vai levar para casa uma melancia doce e suculenta. Segredos que só quem entende de fruta sabe!",
+        conteudo: `<p>Escolher uma boa melancia parece difícil, mas com esses truques você nunca mais erra!</p>
+        <h3>🟢 Olhe a mancha amarela (campo)</h3><p>A mancha clara onde a melancia ficou apoiada no chão indica maturação. Quanto mais amarelada, mais tempo ficou amadurecendo no pé.</p>
+        <h3>🔊 Bata e ouça o som</h3><p>Uma melancia madura produz um som grave e oco. Som abafado indica que pode estar passada.</p>
+        <h3>⚖️ Peso</h3><p>Uma melancia boa é pesada para seu tamanho. Isso indica boa quantidade de água — e de sabor!</p>
+        <h3>🌿 Observe o cabinho</h3><p>Se o cabinho estiver seco, a melancia está madura. Verde demais? Pode ter sido colhida cedo.</p>
+        <p><strong>Na Dresfrut</strong> nossos feirantes já selecionam as melhores para você!</p>`
+      },
+      {
+        id: "vitaminas-cenoura",
+        titulo: "Cenoura: por que ela deve estar na sua mesa todo dia",
+        categoria: "saude",
+        catLabel: "💚 Saúde",
+        data: "10/04/2025",
+        autor: "Equipe Dresfrut",
+        destaque: false,
+        img: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=600&q=80",
+        resumo: "A cenoura é rica em betacaroteno, que o corpo converte em vitamina A — essencial para a visão, pele e imunidade. Confira por que ela deve estar presente nas suas refeições.",
+        conteudo: `<p>A cenoura é um dos legumes mais nutritivos e acessíveis que existem. Veja por que colocá-la no cardápio diário é uma ótima ideia.</p>
+        <h3>🥕 Rica em betacaroteno</h3><p>O pigmento que dá a cor laranja é convertido em vitamina A pelo organismo, essencial para a visão, principalmente noturna.</p>
+        <h3>💪 Fortalece a imunidade</h3><p>A vitamina A atua diretamente nas mucosas, primeira linha de defesa do organismo contra vírus e bactérias.</p>
+        <h3>🫀 Saúde do coração</h3><p>As fibras e antioxidantes da cenoura ajudam a controlar o colesterol e proteger o coração.</p>`
+      },
+      {
+        id: "dia-das-maes-cesta",
+        titulo: "Ideia para o Dia das Mães: cesta de frutas artesanal",
+        categoria: "datas",
+        catLabel: "📅 Datas Especiais",
+        data: "02/05/2025",
+        autor: "Equipe Dresfrut",
+        destaque: false,
+        img: "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=600&q=80",
+        resumo: "Uma cesta de frutas fresquinhas é o presente mais carinhoso e saudável para a mãe. Veja como montar uma linda cesta artesanal com os produtos da Dresfrut!",
+        conteudo: `<p>O Dia das Mães está chegando e que tal presentear com saúde e carinho? Uma cesta de frutas da estação é um presente lindo, prático e cheio de amor!</p>
+        <h3>🧺 Como montar:</h3>
+        <ol><li>Escolha uma cesta ou caixinha bonita</li><li>Forre com papel celofane ou palha</li><li>Selecione frutas coloridas e variadas</li><li>Inclua uma nota carinhosa</li><li>Finalize com um laço!</li></ol>
+        <h3>🍎 Sugestão de frutas:</h3>
+        <p>Morangos, uvas, kiwi, manga, maçã e tangerina formam uma combinação colorida e deliciosa. Você encontra tudo aqui na Dresfrut!</p>`
+      },
+      {
+        id: "conservar-verduras",
+        titulo: "Como conservar verduras por mais tempo na geladeira",
+        categoria: "dicas",
+        catLabel: "💡 Dicas",
+        data: "28/03/2025",
+        autor: "Equipe Dresfrut",
+        destaque: false,
+        img: "https://images.unsplash.com/photo-1622205313162-be1d5712a43f?w=600&q=80",
+        resumo: "Verduras estragando rápido? Com essas dicas simples você mantém a alface, couve e outras folhas fresquinhas por muito mais tempo.",
+        conteudo: `<p>Manter as verduras frescas por mais dias é economizar dinheiro e evitar desperdício. Veja as melhores técnicas!</p>
+        <h3>🥬 Alface e folhas</h3><p>Lave, seque bem e envolva em papel toalha antes de guardar num pote fechado na geladeira. Dura até 7 dias!</p>
+        <h3>🥕 Cenoura e beterraba</h3><p>Remova as folhas, guarde em saco plástico ou pote com um pouco de água. Dura semanas.</p>
+        <h3>🌿 Ervas (salsinha, coentro)</h3><p>Coloque em um copo com água como se fosse um buquê, cubra com saco plástico e leve à geladeira.</p>`
+      },
+    ];
+
+    let catAtiva = "todos";
+    let termoBlog = "";
+
+    function renderPosts() {
+      const grid = document.getElementById("blog-posts-grid");
+      let posts = BLOG_POSTS.filter(p => {
+        const catOk = catAtiva === "todos" || p.categoria === catAtiva;
+        const busca = termoBlog.toLowerCase();
+        const busOk = !busca || p.titulo.toLowerCase().includes(busca) || p.resumo.toLowerCase().includes(busca);
+        return catOk && busOk;
+      });
+
+      if (posts.length === 0) {
+        grid.innerHTML = `<div style="text-align:center;padding:var(--space-10);color:var(--color-text-muted)">
+          <p style="font-size:2rem">📰</p><p>Nenhum post encontrado</p>
+        </div>`;
+        return;
+      }
+
+      grid.innerHTML = posts.map((post, i) => `
+        <article class="blog-post-card ${i === 0 && catAtiva === 'todos' ? 'destaque' : ''}" id="${post.id}">
+          <img class="blog-post-img" src="${post.img}" alt="${post.titulo}" loading="${i < 2 ? 'eager' : 'lazy'}" />
+          <div class="blog-post-body">
+            <div class="blog-post-meta">
+              <span class="blog-post-cat">${post.catLabel}</span>
+              <span class="blog-post-date">📅 ${post.data}</span>
+            </div>
+            <h2 class="blog-post-title">${post.titulo}</h2>
+            <p class="blog-post-excerpt">${post.resumo}</p>
+            <div class="blog-post-footer">
+              <div class="blog-post-author">
+                <div class="blog-post-author-avatar">🌿</div>
+                <span>${post.autor}</span>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="abrirPost('${post.id}')">
+                Ler mais →
+              </button>
+            </div>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderRecentes() {
+      const div = document.getElementById("sidebar-recent");
+      if (!div) return;
+      div.innerHTML = BLOG_POSTS.slice(0, 4).map(p => `
+        <a class="sidebar-recent-item" href="#${p.id}" onclick="abrirPost('${p.id}')">
+          <img class="sidebar-recent-img" src="${p.img}" alt="${p.titulo}" loading="lazy" />
+          <div>
+            <div class="sidebar-recent-title">${p.titulo}</div>
+            <div class="sidebar-recent-date">${p.data}</div>
+          </div>
+        </a>
+      `).join("");
+    }
+
+    function abrirPost(id) {
+      const post = BLOG_POSTS.find(p => p.id === id);
+      if (!post) return;
+
+      const modal = document.createElement("div");
+      modal.style.cssText = `
+        position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:5000;
+        display:flex;align-items:flex-start;justify-content:center;
+        padding:var(--space-4);overflow-y:auto;
+      `;
+      modal.innerHTML = `
+        <div style="background:white;border-radius:var(--radius-xl);max-width:700px;width:100%;
+                    margin:var(--space-4) auto;overflow:hidden;box-shadow:var(--shadow-lg)">
+          <img src="${post.img}" alt="${post.titulo}" style="width:100%;height:300px;object-fit:cover" />
+          <div style="padding:var(--space-6)">
+            <div style="display:flex;gap:var(--space-2);margin-bottom:var(--space-3)">
+              <span class="badge badge-green">${post.catLabel}</span>
+              <span style="font-size:var(--text-xs);color:var(--color-text-muted)">📅 ${post.data}</span>
+            </div>
+            <h1 style="font-family:var(--font-display);font-size:var(--text-3xl);margin-bottom:var(--space-4);line-height:1.2">${post.titulo}</h1>
+            <div style="line-height:1.8;color:var(--color-text-soft);font-size:var(--text-base)">${post.conteudo}</div>
+            <hr style="margin:var(--space-5) 0;border:none;border-top:1px solid var(--color-border)">
+            <div style="display:flex;gap:var(--space-3);align-items:center;flex-wrap:wrap">
+              <a href="pedidos.html" class="btn btn-primary">🛒 Comprar agora na Dresfrut</a>
+              <button class="btn btn-outline" onclick="this.closest('[style]').remove()">✕ Fechar</button>
+            </div>
+          </div>
+        </div>
+      `;
+      modal.addEventListener("click", (e) => { if (e.target === modal) modal.remove(); });
+      document.body.appendChild(modal);
+    }
+
+    function assinarNewsletter() {
+      const email = document.getElementById("newsletter-email").value.trim();
+      if (!email) { showToast("⚠️ Digite seu e-mail!"); return; }
+      showToast("✅ Inscrição realizada! Obrigado 💚");
+      document.getElementById("newsletter-email").value = "";
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderPosts();
+      renderRecentes();
+
+      /* Filtros */
+      document.querySelectorAll(".blog-filtro-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".blog-filtro-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          catAtiva = btn.dataset.cat;
+          renderPosts();
+        });
+      });
+
+      /* Busca */
+      document.getElementById("blog-busca")?.addEventListener("input", (e) => {
+        termoBlog = e.target.value;
+        renderPosts();
+      });
+    });
+  </script>
+</body>
+</html>

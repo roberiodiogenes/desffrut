@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel Administrativo – Dresfrut</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="../css/config.css" />
+  <link rel="stylesheet" href="../css/global.css" />
+  <style>
+    body { background: #F0F4F0; }
+
+    .admin-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: 100vh;
+    }
+
+    /* Sidebar admin */
+    .admin-sidebar {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-6) 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .admin-sidebar-logo {
+      padding: 0 var(--space-5) var(--space-6);
+      border-bottom: 1px solid rgba(255,255,255,.1);
+      margin-bottom: var(--space-4);
+    }
+    .admin-sidebar-logo-name {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      color: white;
+    }
+    .admin-sidebar-logo-sub {
+      font-size: var(--text-xs);
+      opacity: .6;
+      display: block;
+    }
+    .admin-nav { list-style: none; padding: 0 var(--space-3); }
+    .admin-nav li a {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-3);
+      border-radius: var(--radius-md);
+      color: rgba(255,255,255,.75);
+      text-decoration: none;
+      font-size: var(--text-sm);
+      font-weight: 600;
+      transition: all var(--transition-fast);
+      margin-bottom: var(--space-1);
+    }
+    .admin-nav li a:hover, .admin-nav li a.active {
+      background: rgba(255,255,255,.15);
+      color: white;
+    }
+    .admin-nav-icon { font-size: 1.1rem; width: 22px; text-align: center; }
+    .admin-nav-sep {
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      opacity: .4;
+      padding: var(--space-4) var(--space-4) var(--space-2);
+      font-weight: 700;
+    }
+
+    /* Main content */
+    .admin-main { padding: var(--space-6); overflow-x: hidden; }
+
+    .admin-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-6);
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+    .admin-topbar h1 {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      color: var(--color-primary-dark);
+    }
+
+    /* KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+    .kpi-card {
+      background: white;
+      border-radius: var(--radius-xl);
+      padding: var(--space-5);
+      box-shadow: var(--shadow-sm);
+      border: 1.5px solid var(--color-border);
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--kpi-color, var(--color-primary));
+    }
+    .kpi-icon {
+      font-size: 2rem;
+      margin-bottom: var(--space-2);
+    }
+    .kpi-value {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      font-weight: 800;
+      color: var(--color-text);
+      line-height: 1;
+      margin-bottom: var(--space-1);
+    }
+    .kpi-label { font-size: var(--text-sm); color: var(--color-text-muted); }
+    .kpi-delta {
+      font-size: var(--text-xs);
+      font-weight: 700;
+      display: inline-block;
+      margin-top: var(--space-2);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+    }
+    .kpi-delta.up   { background: #E8F5E9; color: var(--color-success); }
+    .kpi-delta.down { background: #FFEBEE; color: var(--color-error); }
+
+    /* Seção de tabs */
+    .admin-tabs {
+      display: flex;
+      gap: var(--space-2);
+      border-bottom: 2px solid var(--color-border);
+      margin-bottom: var(--space-5);
+    }
+    .admin-tab {
+      padding: var(--space-2) var(--space-4);
+      border: none;
+      background: none;
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      font-weight: 700;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: all var(--transition-fast);
+    }
+    .admin-tab.active {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+    }
+    .admin-panel { display: none; }
+    .admin-panel.active { display: block; }
+
+    /* Tabelas */
+    .admin-table-wrap {
+      background: white;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+      border: 1.5px solid var(--color-border);
+      overflow: hidden;
+    }
+    .admin-table-header {
+      padding: var(--space-4) var(--space-5);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--color-surface-alt);
+    }
+    .admin-table-header h3 { font-weight: 800; }
+
+    table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+    thead th {
+      padding: var(--space-3) var(--space-4);
+      text-align: left;
+      font-size: var(--text-xs);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--color-text-muted);
+      background: var(--color-surface-alt);
+      border-bottom: 1px solid var(--color-border);
+    }
+    tbody tr { border-bottom: 1px solid var(--color-border); transition: background var(--transition-fast); }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--color-surface-alt); }
+    tbody td { padding: var(--space-3) var(--space-4); }
+
+    .rank-badge {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: var(--text-sm);
+    }
+
+    /* Preços inline */
+    .price-input {
+      width: 90px;
+      padding: var(--space-1) var(--space-2);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      font-weight: 700;
+      color: var(--color-primary-dark);
+      text-align: right;
+    }
+    .price-input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+
+    .disponivel-toggle {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .toggle-switch {
+      width: 40px; height: 22px;
+      background: var(--color-border);
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      position: relative;
+      transition: background var(--transition-fast);
+      border: none;
+    }
+    .toggle-switch.on { background: var(--color-primary); }
+    .toggle-switch::after {
+      content: "";
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 18px; height: 18px;
+      background: white;
+      border-radius: 50%;
+      transition: left var(--transition-fast);
+      box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    }
+    .toggle-switch.on::after { left: 20px; }
+
+    /* Caixa */
+    .caixa-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+      margin-bottom: var(--space-5);
+    }
+    .caixa-card {
+      background: white;
+      border-radius: var(--radius-xl);
+      padding: var(--space-5);
+      box-shadow: var(--shadow-sm);
+      border: 1.5px solid var(--color-border);
+    }
+    .caixa-card-title { font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-1); font-weight: 600; }
+    .caixa-card-value { font-family: var(--font-display); font-size: var(--text-4xl); font-weight: 800; }
+
+    /* Login admin */
+    .admin-login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--gradient-hero);
+      padding: var(--space-4);
+    }
+    .admin-login-box {
+      background: white;
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      width: 100%;
+      max-width: 380px;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .admin-layout { grid-template-columns: 1fr; }
+      .admin-sidebar { display: none; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .caixa-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TELA DE LOGIN ADMIN -->
+  <div id="admin-login-screen" class="admin-login-screen">
+    <div class="admin-login-box">
+      <div style="font-size:3rem;margin-bottom:var(--space-3)">🌿</div>
+      <h1 style="font-family:var(--font-display);font-size:var(--text-3xl);color:var(--color-primary-dark);margin-bottom:var(--space-1)">
+        Dresfrut Admin
+      </h1>
+      <p style="color:var(--color-text-muted);font-size:var(--text-sm);margin-bottom:var(--space-6)">
+        Área restrita — somente administradores
+      </p>
+      <div class="form-group" style="text-align:left">
+        <label class="form-label" for="admin-user">Usuário</label>
+        <input class="form-input" type="text" id="admin-user" placeholder="admin" autocomplete="username" />
+      </div>
+      <div class="form-group" style="text-align:left">
+        <label class="form-label" for="admin-pass">Senha</label>
+        <input class="form-input" type="password" id="admin-pass" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+      <button class="btn btn-primary btn-lg" style="width:100%" onclick="loginAdmin()">
+        Entrar no painel
+      </button>
+      <p style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--space-3)">
+        Padrão: admin / dresfrut2025<br>
+        <strong>⚠️ Altere a senha em produção!</strong>
+      </p>
+    </div>
+  </div>
+
+  <!-- PAINEL ADMIN (oculto até login) -->
+  <div id="admin-painel" style="display:none">
+    <div class="admin-layout">
+
+      <!-- Sidebar -->
+      <aside class="admin-sidebar">
+        <div class="admin-sidebar-logo">
+          <div style="font-size:1.8rem;margin-bottom:var(--space-1)">🌿</div>
+          <div class="admin-sidebar-logo-name">Dresfrut</div>
+          <span class="admin-sidebar-logo-sub">Painel Administrativo</span>
+        </div>
+        <ul class="admin-nav">
+          <li class="admin-nav-sep">Principal</li>
+          <li><a href="#" class="active" onclick="switchPanel('dashboard',this)"><span class="admin-nav-icon">📊</span> Dashboard</a></li>
+          <li><a href="#" onclick="switchPanel('caixa',this)"><span class="admin-nav-icon">💰</span> Caixa</a></li>
+          <li><a href="#" onclick="switchPanel('pedidos',this)"><span class="admin-nav-icon">📦</span> Pedidos</a></li>
+          <li class="admin-nav-sep">Gestão</li>
+          <li><a href="#" onclick="switchPanel('precos',this)"><span class="admin-nav-icon">🏷️</span> Preços</a></li>
+          <li><a href="#" onclick="switchPanel('clientes',this)"><span class="admin-nav-icon">👥</span> Clientes</a></li>
+          <li><a href="#" onclick="switchPanel('ranking',this)"><span class="admin-nav-icon">🏆</span> Ranking</a></li>
+          <li class="admin-nav-sep">Site</li>
+          <li><a href="../index.html" target="_blank"><span class="admin-nav-icon">🌐</span> Ver Site</a></li>
+          <li><a href="#" onclick="logoutAdmin()"><span class="admin-nav-icon">🚪</span> Sair</a></li>
+        </ul>
+      </aside>
+
+      <!-- Conteúdo principal -->
+      <main class="admin-main">
+        <div class="admin-topbar">
+          <h1 id="admin-page-title">📊 Dashboard</h1>
+          <div style="display:flex;gap:var(--space-2);align-items:center">
+            <span style="font-size:var(--text-sm);color:var(--color-text-muted)" id="admin-date"></span>
+            <span class="badge badge-green">● Online</span>
+          </div>
+        </div>
+
+        <!-- DASHBOARD -->
+        <div id="panel-dashboard" class="admin-panel active">
+          <div class="kpi-grid">
+            <div class="kpi-card" style="--kpi-color:var(--color-primary)">
+              <div class="kpi-icon">💰</div>
+              <div class="kpi-value" id="kpi-faturamento">R$ 0</div>
+              <div class="kpi-label">Faturamento hoje</div>
+              <span class="kpi-delta up">↑ editável</span>
+            </div>
+            <div class="kpi-card" style="--kpi-color:var(--color-accent)">
+              <div class="kpi-icon">📦</div>
+              <div class="kpi-value" id="kpi-pedidos">0</div>
+              <div class="kpi-label">Pedidos hoje</div>
+              <span class="kpi-delta up">↑ editável</span>
+            </div>
+            <div class="kpi-card" style="--kpi-color:#2196F3">
+              <div class="kpi-icon">👥</div>
+              <div class="kpi-value" id="kpi-clientes">0</div>
+              <div class="kpi-label">Clientes cadastrados</div>
+              <span class="kpi-delta up">↑ total</span>
+            </div>
+            <div class="kpi-card" style="--kpi-color:#FF9800">
+              <div class="kpi-icon">🍋</div>
+              <div class="kpi-value" id="kpi-pontos">0</div>
+              <div class="kpi-label">Dres-moedas emitidas</div>
+            </div>
+          </div>
+
+          <div class="admin-table-wrap">
+            <div class="admin-table-header">
+              <h3>📦 Últimos pedidos (simulado)</h3>
+              <span class="badge badge-green">Hoje</span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Pedido</th>
+                  <th>Cliente</th>
+                  <th>Itens</th>
+                  <th>Total</th>
+                  <th>Pagamento</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="tabela-pedidos-dash">
+                <tr><td colspan="6" style="text-align:center;color:var(--color-text-muted);padding:var(--space-6)">Nenhum pedido registrado ainda</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CAIXA -->
+        <div id="panel-caixa" class="admin-panel">
+          <div class="caixa-grid">
+            <div class="caixa-card" style="border-top:4px solid var(--color-primary)">
+              <div class="caixa-card-title">💰 Total de entradas hoje</div>
+              <div class="caixa-card-value" style="color:var(--color-primary)" id="caixa-entradas">R$ 0,00</div>
+            </div>
+            <div class="caixa-card" style="border-top:4px solid var(--color-accent)">
+              <div class="caixa-card-title">📦 Pedidos entregues hoje</div>
+              <div class="caixa-card-value" style="color:var(--color-accent)" id="caixa-pedidos-qtd">0</div>
+            </div>
+          </div>
+
+          <div class="admin-table-wrap">
+            <div class="admin-table-header">
+              <h3>📋 Lançamentos do dia</h3>
+              <button class="btn btn-primary btn-sm" onclick="novoLancamento()">+ Novo lançamento</button>
+            </div>
+            <table>
+              <thead>
+                <tr><th>Hora</th><th>Descrição</th><th>Forma</th><th>Valor</th><th>Ação</th></tr>
+              </thead>
+              <tbody id="tabela-caixa">
+                <tr><td colspan="5" style="text-align:center;color:var(--color-text-muted);padding:var(--space-6)">Nenhum lançamento ainda</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- PREÇOS -->
+        <div id="panel-precos" class="admin-panel">
+          <div class="admin-table-wrap">
+            <div class="admin-table-header">
+              <h3>🏷️ Atualizar Preços</h3>
+              <div style="display:flex;gap:var(--space-2)">
+                <button class="btn btn-outline btn-sm" onclick="filtrarPrecos('frutas')">🍎 Frutas</button>
+                <button class="btn btn-outline btn-sm" onclick="filtrarPrecos('verduras')">🥦 Verduras</button>
+                <button class="btn btn-primary btn-sm" onclick="salvarPrecos()">💾 Salvar alterações</button>
+              </div>
+            </div>
+            <table>
+              <thead>
+                <tr><th>#</th><th>Produto</th><th>Unidade</th><th>Preço (R$)</th><th>Disponível</th></tr>
+              </thead>
+              <tbody id="tabela-precos"><!-- JS --></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CLIENTES -->
+        <div id="panel-clientes" class="admin-panel">
+          <div class="admin-table-wrap">
+            <div class="admin-table-header">
+              <h3>👥 Clientes Cadastrados</h3>
+              <span id="total-clientes-label" class="badge badge-green">0 clientes</span>
+            </div>
+            <table>
+              <thead>
+                <tr><th>Nome</th><th>CPF</th><th>WhatsApp</th><th>Endereço</th><th>Cadastro</th><th>Pontos</th></tr>
+              </thead>
+              <tbody id="tabela-clientes">
+                <tr><td colspan="6" style="text-align:center;color:var(--color-text-muted);padding:var(--space-6)">Nenhum cliente cadastrado ainda</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- RANKING -->
+        <div id="panel-ranking" class="admin-panel">
+          <div class="admin-table-wrap">
+            <div class="admin-table-header">
+              <h3>🏆 Ranking de Clientes – Dres-moedas</h3>
+            </div>
+            <table>
+              <thead>
+                <tr><th>#</th><th>Cliente</th><th>🍋 Dres-moedas</th><th>Total Gasto</th><th>Pedidos</th></tr>
+              </thead>
+              <tbody id="tabela-ranking">
+                <tr><td colspan="5" style="text-align:center;color:var(--color-text-muted);padding:var(--space-6)">Sem dados ainda</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="../js/links.js"></script>
+  <script src="../data/produtos.js"></script>
+  <script src="../js/global.js"></script>
+  <script>
+    /* ---- CREDENCIAIS ADMIN (altere em produção!) ---- */
+    const ADMIN_USER = "admin";
+    const ADMIN_PASS = "dresfrut2025";
+
+    function loginAdmin() {
+      const u = document.getElementById("admin-user").value;
+      const p = document.getElementById("admin-pass").value;
+      if (u === ADMIN_USER && p === ADMIN_PASS) {
+        document.getElementById("admin-login-screen").style.display = "none";
+        document.getElementById("admin-painel").style.display = "block";
+        sessionStorage.setItem("dresfrut_admin", "1");
+        iniciarAdmin();
+      } else {
+        showToast("❌ Usuário ou senha incorretos!");
+      }
+    }
+
+    function logoutAdmin() {
+      sessionStorage.removeItem("dresfrut_admin");
+      document.getElementById("admin-login-screen").style.display = "flex";
+      document.getElementById("admin-painel").style.display = "none";
+    }
+
+    function switchPanel(nome, el) {
+      document.querySelectorAll(".admin-panel").forEach(p => p.classList.remove("active"));
+      document.querySelectorAll(".admin-nav a").forEach(a => a.classList.remove("active"));
+      document.getElementById("panel-" + nome)?.classList.add("active");
+      el?.classList.add("active");
+      const titulos = {
+        dashboard:"📊 Dashboard", caixa:"💰 Caixa", pedidos:"📦 Pedidos",
+        precos:"🏷️ Preços", clientes:"👥 Clientes", ranking:"🏆 Ranking"
+      };
+      document.getElementById("admin-page-title").textContent = titulos[nome] || nome;
+    }
+
+    function getUsers() {
+      return JSON.parse(localStorage.getItem("dresfrut_users") || "[]");
+    }
+
+    /* Preços customizados (override do arquivo de dados) */
+    const PRECOS_KEY = "dresfrut_precos_custom";
+    function getPrecos() {
+      const saved = JSON.parse(localStorage.getItem(PRECOS_KEY) || "{}");
+      return saved;
+    }
+
+    function iniciarAdmin() {
+      /* Data */
+      document.getElementById("admin-date").textContent =
+        new Date().toLocaleDateString("pt-BR", { weekday:"long", day:"2-digit", month:"long", year:"numeric" });
+
+      /* KPIs */
+      const users = getUsers();
+      document.getElementById("kpi-clientes").textContent = users.length;
+      const totalPontos = users.reduce((s, u) => s + (u.pontos || 0), 0);
+      document.getElementById("kpi-pontos").textContent = totalPontos;
+
+      carregarClientes();
+      carregarRanking();
+      carregarPrecos("todos");
+    }
+
+    function carregarClientes() {
+      const users = getUsers();
+      const tbody = document.getElementById("tabela-clientes");
+      const label = document.getElementById("total-clientes-label");
+      if (label) label.textContent = users.length + " cliente" + (users.length !== 1 ? "s" : "");
+      if (users.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--color-text-muted);padding:var(--space-6)">Nenhum cliente cadastrado ainda</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = users.map(u => `
+        <tr>
+          <td><strong>${u.nome}</strong></td>
+          <td style="color:var(--color-text-muted)">${u.cpf}</td>
+          <td><a href="https://wa.me/55${u.fone.replace(/\D/g,'')}" target="_blank" rel="noopener" style="color:var(--color-primary)">${u.fone}</a></td>
+          <td style="font-size:var(--text-xs)">${u.endereco || "—"}</td>
+          <td style="color:var(--color-text-muted);font-size:var(--text-xs)">${new Date(u.dataCadastro).toLocaleDateString("pt-BR")}</td>
+          <td><span class="badge badge-orange">🍋 ${u.pontos || 0}</span></td>
+        </tr>
+      `).join("");
+    }
+
+    function carregarRanking() {
+      const users = getUsers().sort((a, b) => (b.pontos || 0) - (a.pontos || 0));
+      const tbody = document.getElementById("tabela-ranking");
+      if (users.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--color-text-muted);padding:var(--space-6)">Sem dados ainda</td></tr>`;
+        return;
+      }
+      const medalhas = ["🥇", "🥈", "🥉"];
+      tbody.innerHTML = users.map((u, i) => `
+        <tr>
+          <td><span class="rank-badge" style="background:${i<3?'var(--color-accent-soft)':'var(--color-border)'}">
+            ${medalhas[i] || (i + 1)}
+          </span></td>
+          <td><strong>${u.nome}</strong></td>
+          <td><span style="color:var(--color-accent);font-weight:800">🍋 ${u.pontos || 0}</span></td>
+          <td>${(u.totalGasto||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</td>
+          <td>${(u.historico||[]).length}</td>
+        </tr>
+      `).join("");
+    }
+
+    let categoriaFiltroPrecos = "todos";
+    function filtrarPrecos(cat) { categoriaFiltroPrecos = cat; carregarPrecos(cat); }
+
+    function carregarPrecos(cat) {
+      const precosCustom = getPrecos();
+      const todos = [...DRESFRUT_PRODUTOS.frutas, ...DRESFRUT_PRODUTOS.verduras];
+      const filtrado = cat === "todos" ? todos : todos.filter(p => p.categoria === cat);
+      const tbody = document.getElementById("tabela-precos");
+      tbody.innerHTML = filtrado.map((p, i) => {
+        const preco = precosCustom[p.id] !== undefined ? precosCustom[p.id] : p.preco;
+        const disponivel = precosCustom[p.id + "_disp"] !== undefined ? precosCustom[p.id + "_disp"] : p.disponivel;
+        return `
+          <tr>
+            <td style="color:var(--color-text-muted);font-size:var(--text-xs)">${i+1}</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:var(--space-2)">
+                <img src="${p.img}" alt="" style="width:32px;height:32px;border-radius:var(--radius-sm);object-fit:cover" />
+                <strong>${p.nome}</strong>
+              </div>
+            </td>
+            <td style="color:var(--color-text-muted)">${p.unidade}</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:var(--space-1)">
+                <span style="color:var(--color-text-muted)">R$</span>
+                <input class="price-input" type="number" step="0.01" min="0"
+                  value="${parseFloat(preco).toFixed(2)}"
+                  data-id="${p.id}"
+                  aria-label="Preço de ${p.nome}" />
+              </div>
+            </td>
+            <td>
+              <button class="toggle-switch ${disponivel ? 'on' : ''}"
+                data-id="${p.id}" data-disp="${disponivel}"
+                onclick="toggleDisponivel(this)"
+                aria-label="${disponivel ? 'Disponível' : 'Indisponível'} – clique para alternar"
+                title="${disponivel ? 'Disponível' : 'Indisponível'}"
+              ></button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function toggleDisponivel(btn) {
+      const novoVal = btn.dataset.disp === "true" ? false : true;
+      btn.dataset.disp = novoVal;
+      btn.classList.toggle("on", novoVal);
+      btn.setAttribute("title", novoVal ? "Disponível" : "Indisponível");
+    }
+
+    function salvarPrecos() {
+      const custom = getPrecos();
+      document.querySelectorAll(".price-input").forEach(input => {
+        const id = input.dataset.id;
+        const val = parseFloat(input.value);
+        if (!isNaN(val) && val >= 0) custom[id] = val;
+      });
+      document.querySelectorAll(".toggle-switch").forEach(btn => {
+        const id = btn.dataset.id;
+        custom[id + "_disp"] = btn.dataset.disp === "true";
+      });
+      localStorage.setItem(PRECOS_KEY, JSON.stringify(custom));
+      showToast("✅ Preços salvos com sucesso!");
+    }
+
+    function novoLancamento() {
+      const desc = prompt("Descrição do lançamento:");
+      if (!desc) return;
+      const val = parseFloat(prompt("Valor (R$):"));
+      if (isNaN(val)) return;
+      const forma = prompt("Forma (pix/dinheiro/cartão):", "pix");
+      const hora = new Date().toLocaleTimeString("pt-BR", {hour:"2-digit",minute:"2-digit"});
+      const tbody = document.getElementById("tabela-caixa");
+      const placeholder = tbody.querySelector("td[colspan]");
+      if (placeholder) placeholder.parentElement.remove();
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${hora}</td>
+        <td>${desc}</td>
+        <td><span class="badge badge-green">${forma}</span></td>
+        <td style="font-weight:800;color:var(--color-primary)">${val.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</td>
+        <td><button class="btn btn-sm" style="border:none;background:var(--color-error);color:white;border-radius:var(--radius-sm);cursor:pointer" onclick="this.closest('tr').remove();atualizarCaixa()">✕</button></td>
+      `;
+      tbody.appendChild(tr);
+      atualizarCaixa();
+    }
+
+    function atualizarCaixa() {
+      let total = 0;
+      let qtd = 0;
+      document.querySelectorAll("#tabela-caixa tr td:nth-child(4)").forEach(td => {
+        const val = parseFloat(td.textContent.replace(/[^\d,]/g,"").replace(",","."));
+        if (!isNaN(val)) { total += val; qtd++; }
+      });
+      const el1 = document.getElementById("caixa-entradas");
+      const el2 = document.getElementById("caixa-pedidos-qtd");
+      if (el1) el1.textContent = total.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+      if (el2) el2.textContent = qtd;
+    }
+
+    /* Auto-login se sessão ativa */
+    document.addEventListener("DOMContentLoaded", () => {
+      if (sessionStorage.getItem("dresfrut_admin") === "1") {
+        document.getElementById("admin-login-screen").style.display = "none";
+        document.getElementById("admin-painel").style.display = "block";
+        iniciarAdmin();
+      }
+      /* Enter no login */
+      document.getElementById("admin-pass")?.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") loginAdmin();
+      });
+    });
+  </script>
+</body>
+</html>
